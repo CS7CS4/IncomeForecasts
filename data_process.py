@@ -40,7 +40,7 @@ def main():
     output.to_csv('dataset.csv', index = None, encoding = 'utf-8')
 
 def salary_(val):
-    if val >= 114762.65297509829:
+    if val >= 114000:
         val = 1
     else:
         val = 0
