@@ -22,44 +22,38 @@ for i in range(0, df.shape[1]):
         x_.append(df.iloc[:, i])
     else:
         y = df.iloc[:, i]
-# x11 = df.iloc[:, i]
-# x12 = df.iloc[:, 1]
-# x13 = df.iloc[:, 2]
-# x21 = df.iloc[:, 3]
-# x22 = df.iloc[:, 4]
-# x23 = df.iloc[:, 5]
-# x24 = df.iloc[:, 6]
-# x31 = df.iloc[:, 7]
-# y = df.iloc[:, 8]
+
 X = np.column_stack(tuple(x_))
 
-# poly = PolynomialFeatures(degree = 2, include_bias = False, interaction_only = False)
-# Xpoly = poly.fit_transform(X)
-# Xpoly_df = pd.DataFrame(Xpoly, columns=poly.get_feature_names_out())
+Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.09, random_state = 0)
 
-# Xtrain, Xtest, ytrain, ytest = train_test_split(Xpoly_df, y, test_size=0.2, random_state=0)
 
 '''KNN>>>>'''
+# best_p = -1
+# best_score = 0.0
+# best_k = -1
 # kfold = 5
 # k_range = [3, 5, 7, 8, 9, 10, 11, 13, 15, 17, 19]
 
 # mean_error = []; std_error = []
-# for k in k_range:
-#     model = KNeighborsClassifier(n_neighbors = k, weights = 'uniform')
-#     from sklearn.model_selection import cross_val_score
-#     scores = cross_val_score(model, X, y, cv = kfold, scoring = 'f1')
-#     mean_error.append(scores.mean())
-#     std_error.append(scores.std())
+# for k in range(10, 100):
+#     for p in range(1, 100):
+#         model = KNeighborsClassifier(n_neighbors = k, weights = 'distance', p = p)
+#         model.fit(Xtrain, ytrain)
+#         knn_score = model.score(Xtest, ytest)
+#         if knn_score > best_score:
+#             best_score = knn_score
+#             best_k = k
+#             best_p = p
 
-# plt.errorbar(k_range, mean_error, yerr=std_error, linewidth=1, label = f'k-fold: {kfold}')
-# plt.xlabel("KNN-k"); plt.ylabel("F1 Score")
-# plt.legend()
-# plt.show()
+# print("best_p = ", best_p)
+# print("best_k = ", best_k)
+# print("best_score = ", best_score)
 '''<<<<KNN'''
 
 #KNN
-model = KNeighborsClassifier(n_neighbors = 9, weights = 'uniform')
-Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.6, random_state = 0)
+model = KNeighborsClassifier(n_neighbors = 23, weights = 'distance', p = 1)
+
 model.fit(Xtrain, ytrain)
 ypred_knn = model.predict(Xtest)
 print(">>>>>>>>>>>>>>>>>>>>>>KNN<<<<<<<<<<<<<<<<<<<<")
@@ -75,4 +69,21 @@ plt.plot(fpr, tpr, label="knn", c="red")
 plt.xlabel("False positive rate")
 plt.ylabel("True positive rate")
 plt.plot([0,1], [0, 1], color = 'yellow', linestyle = '--')
+
+#dummy
+#baseline model
+dummy = DummyClassifier(strategy="most_frequent").fit(Xtrain, ytrain)
+ypred_dummy = dummy.predict(Xtest)
+print(">>>>>>>>>>>>>>>>>>>>>>Dummy Model<<<<<<<<<<<<<<<<<<<<")
+print(confusion_matrix(ytest, ypred_dummy))
+print(classification_report(ytest, ypred_dummy))
+print("-------------------------------------------------------------")
+fpr, tpr, _ = roc_curve(ytest,ypred_dummy)
+plt.plot(fpr, tpr, label="baseline model", c="green")
+plt.xlabel("False positive rate")
+plt.ylabel("True positive rate")
+plt.plot([0,1], [0, 1], color = 'black', linestyle = '--')
+test_auc = metrics.roc_auc_score(ytest, ypred_dummy)
+
+
 plt.show()
