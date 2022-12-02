@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
-
+import sys
 
 #split salary by blank space and select the numeric number
 def splitSalary(salary):
@@ -28,7 +28,7 @@ def cleanSalary(salary):
         salaryStr = temp.split('$')
         salaryList.append(float(salaryStr[1]))
 
-    print(salaryList)
+    # print(salaryList)
     salarySer = pd.Series(salaryList)
     return salarySer
 
@@ -54,6 +54,7 @@ def draw_boxplot(dataFrame):
     f,ax=plt.subplots(figsize=(10,8))
     import seaborn as sns
     sns.boxplot(x='experience_filter', y='Salary', data=dataFrame, ax=ax)
+    # sns.boxplot(y='Salary', data=dataFrame, ax=ax)
     plt.show()
 
 
@@ -71,7 +72,7 @@ def padding(final_cleaned_data):
                                                & (final_cleaned_data['job_title_filter'] == job_type) \
                                                & (final_cleaned_data['experience_filter'] == experience)][
                     'Salary'].median()
-                print(media_tmp)
+                # print(media_tmp)
                 final_cleaned_data.loc[((final_cleaned_data['location_filter'] == location) \
                                         & (final_cleaned_data['job_title_filter'] == job_type) \
                                         & (final_cleaned_data['experience_filter'] == experience)
@@ -79,13 +80,46 @@ def padding(final_cleaned_data):
     final_cleaned_data.to_csv("data_fill.csv", index=False)
 
 
-data = pd.read_csv("data_drop.csv")
-#delete null salary
-data = data.dropna(subset=['job_title_filter', 'Salary'])
-data = data.reset_index(drop=True)
-data.loc[:, 'Salary'] = splitSalary(data.loc[:, 'Salary'])
-data.loc[:, 'Salary'] = cleanSalary(data.loc[:, 'Salary'])
-data.loc[:, 'Salary'] = convert_to_year(data.loc[:, 'Salary'])
-data.to_csv(os.getcwd() + '\\cleaned_data.csv', index=False)
-print(data.describe())
-draw_boxplot(data)
+if __name__ == "__main__":
+    data = pd.read_csv(sys.argv[1])
+    data = data[["Company", "Title", "job_title_filter", "location_filter", "experience_filter", "Salary"]]
+    #delete null salary
+    data = data.dropna(subset=['job_title_filter', 'Salary'])
+    data = data.reset_index(drop=True)
+    data.loc[:, 'Salary'] = splitSalary(data.loc[:, 'Salary'])
+    data.loc[:, 'Salary'] = cleanSalary(data.loc[:, 'Salary'])
+    data.loc[:, 'Salary'] = convert_to_year(data.loc[:, 'Salary'])
+    data.to_csv('dataset/cleaned_data.csv', index=False)
+    print(data.describe())
+    # check group, remove Outliers
+    group = data.groupby(by=["location_filter", "job_title_filter", "experience_filter"])["Salary"].mean()
+    print(group)
+
+    draw_data = data[(data["location_filter"] == "San Francisco")
+                     & (data["job_title_filter"] == "software developer")]
+    draw_boxplot(draw_data)
+
+    data = data.drop(index=data[(data["location_filter"] == "San Francisco") & (data["job_title_filter"] == "software developer")
+                                & (data["experience_filter"] == "Mid")
+                                & (data["Salary"] >= 350000)].index)
+    data = data.reset_index(drop=True)
+
+    draw_data = data[(data["location_filter"] == "San Jose")
+                     & (data["job_title_filter"] == "data science")]
+    draw_boxplot(draw_data)
+
+    data = data.drop(index=data[(data["location_filter"] == "San Jose") & (data["job_title_filter"] == "data science")
+                                & (data["experience_filter"] == "Mid")
+                                & ((data["Salary"] >= 210000) | (data["Salary"] <= 70000))].index)
+    data = data.reset_index(drop=True)
+
+    data = data.drop(index=data[(data["location_filter"] == "San Jose") & (data["job_title_filter"] == "data science")
+                                & (data["experience_filter"] == "Senior")
+                                & (data["Salary"] >= 250000)].index)
+    data = data.reset_index(drop=True)
+
+    data.to_csv('dataset/train_data.csv', index=False)
+
+    group = data.groupby(by=["location_filter", "job_title_filter", "experience_filter"])["Salary"].mean()
+    print(group)
+
