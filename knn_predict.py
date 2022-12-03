@@ -62,12 +62,8 @@ print("-------------------------------------------------------------")
 print(f'Accuracy of train: {model.score(Xtrain, ytrain)}')
 print(f'Accuracy of test: {model.score(Xtest, ytest)}')
 #draw roc curve
-fpr, tpr, _ = roc_curve(ytest,ypred_knn)
-print(f'AUC of KNN: {auc(fpr, tpr)}')
-plt.plot(fpr, tpr, label="knn", c="red")
-plt.xlabel("False positive rate")
-plt.ylabel("True positive rate")
-plt.plot([0,1], [0, 1], color = 'yellow', linestyle = '--')
+fpr_knn, tpr_knn, _knn = roc_curve(ytest,ypred_knn)
+print(f'AUC of KNN: {auc(fpr_knn, tpr_knn)}')
 
 #dummy
 #baseline model
@@ -76,7 +72,7 @@ ypred_dummy = dummy.predict(Xtest)
 print(">>>>>>>>>>>>>>>>>>>>>>Dummy Model<<<<<<<<<<<<<<<<<<<<")
 print(confusion_matrix(ytest, ypred_dummy))
 print(classification_report(ytest, ypred_dummy))
-plot_confusion_matrix(model, Xtest, ytest, display_labels=["y = 0", "y = 1"])
+plot_confusion_matrix(dummy, Xtest, ytest, display_labels=["y = 0", "y = 1"])
 plt.title("Most Frequent Classifier Confusion Matrix")
 plt.show()
 print("-------------------------------------------------------------")
@@ -86,6 +82,11 @@ plt.xlabel("False positive rate")
 plt.ylabel("True positive rate")
 plt.plot([0,1], [0, 1], color = 'black', linestyle = '--')
 test_auc = metrics.roc_auc_score(ytest, ypred_dummy)
+
+plt.plot(fpr_knn, tpr_knn, label="knn", c="red")
+plt.xlabel("False positive rate")
+plt.ylabel("True positive rate")
+plt.plot([0,1], [0, 1], color = 'yellow', linestyle = '--')
 
 
 plt.show()
