@@ -81,12 +81,15 @@ plt.plot(fpr, tpr, label="baseline model", c="green")
 plt.xlabel("False positive rate")
 plt.ylabel("True positive rate")
 plt.plot([0,1], [0, 1], color = 'black', linestyle = '--')
-test_auc = metrics.roc_auc_score(ytest, ypred_dummy)
+print(f'Accuracy of train: {model.score(Xtrain, ytrain)}')
+print(f'Accuracy of test: {model.score(Xtest, ytest)}')
+print(f'AUC of Dummy: {auc(fpr, tpr)}')
 
 plt.plot(fpr_knn, tpr_knn, label="knn", c="red")
 plt.xlabel("False positive rate")
 plt.ylabel("True positive rate")
 plt.plot([0,1], [0, 1], color = 'yellow', linestyle = '--')
+plt.legend()
 
 
 plt.show()
