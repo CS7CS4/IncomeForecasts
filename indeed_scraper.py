@@ -30,7 +30,7 @@ class Scraper():
         self.ERROR_TEMPLATE = "A {0} exception occurred. Arguments:\n{1!r}"
 
 
-        self.html_dir = "html_1202/"
+        self.html_dir = "html_1203/"
 
         # self.salay_filter = None
         self.location_filter = None
@@ -44,11 +44,9 @@ class Scraper():
         # self.location_filters = ["San+Jose"]
         # &sc=0kf%3Aattr%28X62BT%29%3B&vjk=e2c652971aac7074
         # &vjk=7f804051c13e6f15
-        # self.education_filters = [("Bachelor","0kf:attr(FCGTU|HFDVW|QJZM9|UTPWG%2COR)"), ("Master","0kf:attr(EXSNN|FCGTU|HFDVW|QJZM9|UTPWG%2COR)")]
+        self.education_filters = [("Bachelor","0kf:attr(FCGTU|HFDVW|QJZM9|UTPWG%2COR)"), ("Master","0kf:attr(EXSNN|FCGTU|HFDVW|QJZM9|UTPWG%2COR)")]
         self.experience_filters = [("Mid","explvl(MID_LEVEL);"), ("Senior","explvl(SENIOR_LEVEL);"), ("Entry","explvl(ENTRY_LEVEL);")]
-        # self.job_title_filters = ["backend+developer", "front+end+developer", "full+stack+developer"]
-        # self.job_title_filters = ["data+science", "software+developer"]
-        self.job_title_filters = ["software+developer"]
+        self.job_title_filters = ["data+science", "software+developer"]
 
     def parse_htmls(self):
         print(self.html_dir)
@@ -69,41 +67,7 @@ class Scraper():
                     raw_html = f.read()
                     parse_htmls = parse_htmls + self.parse_indeed_data(raw_html)
 
-        self.save_to_csv(parse_htmls, 'data_1202_raw.csv')
-
-    # def execute(self, parse_html=False):
-    #     # https://www.indeed.com/jobs?q=backend+developer+%2490%2C000&l=Seattle&sc=0kf%3Aattr%28FCGTU%7CHFDVW%7CQJZM9%7CUTPWG%252COR%29explvl%28ENTRY_LEVEL%29%3B&vjk=7f804051c13e6f15
-    #     # https://www.indeed.com/jobs?q=backend developer $90,000&l=Seattle&sc=0kf:attr(FCGTU|HFDVW|QJZM9|UTPWG%2COR)explvl(ENTRY_LEVEL);&vjk=7f804051c13e6f15
-    #
-    #     for job_title_filter in self.job_title_filters:
-    #         self.job_title_filter = job_title_filter.replace("+", " ")
-    #         for location in self.location_filters:
-    #             self.location_filter = location.replace("+", " ")
-    #             for experience in self.experience_filters:
-    #                 self.experience_filter = experience[0]
-    #                 experience_quote = experience[1]
-    #                 for education in self.education_filters:
-    #                     self.education_filter = education[0]
-    #                     education_quote = education[1]
-    #                     end = 40
-    #                     # if location in ["New+York", "San+Francisco", "California"]:
-    #                     #     end = 60
-    #                     for i in range(0, end):
-    #                         url = self.base_url + "q=" + job_title_filter + "&l=" + location \
-    #                         + "&sc=" + parse.quote(education_quote+experience_quote) \
-    #                         + "jt%28fulltime%29%3B&vjk=7f804051c13e6f15" + "&start=%d" % (i*10)
-    #                         logging.info("Scraping Pass #" + str(i + 1) + " for " + "'" + str(url) + "' ...")
-    #
-    #                         if not os.path.exists(self.html_dir):
-    #                             os.mkdir(self.html_dir)
-    #                         file_name = " %s_%s_%s_%s" % (self.job_title_filter, self.location_filter, self.education_filter, self.experience_filter)
-    #                         save_path = "%s/%s_%d.html" % (self.html_dir, file_name, i)
-    #
-    #                         if not os.path.exists(save_path):
-    #                             raw_html = self.scrape_html(url)
-    #                             if raw_html is not None:
-    #                                 with open(save_path, 'w') as f:
-    #                                     f.write(raw_html)
+        self.save_to_csv(parse_htmls, 'data_1203_raw.csv')
 
     def execute(self):
         # https://www.indeed.com/jobs?q=backend+developer+%2490%2C000&l=Seattle&sc=0kf%3Aattr%28FCGTU%7CHFDVW%7CQJZM9%7CUTPWG%252COR%29explvl%28ENTRY_LEVEL%29%3B&vjk=7f804051c13e6f15
@@ -116,26 +80,28 @@ class Scraper():
                 for experience in self.experience_filters:
                     self.experience_filter = experience[0]
                     experience_quote = experience[1]
-                    end = 80
-                    if job_title_filter == "data+science":
-                        end = 40
-                    for i in range(0, end):
-                        url = self.base_url + "q=" + job_title_filter + "&l=" + location \
-                        + "&sc=" + parse.quote("0kf:"+experience_quote) \
-                        + "jt%28fulltime%29%3B&vjk=7f804051c13e6f15" + "&start=%d" % (i*10)
-                        logging.info("Scraping Pass #" + str(i + 1) + " for " + "'" + str(url) + "' ...")
+                    for education in self.education_filters:
+                        self.education_filter = education[0]
+                        education_quote = education[1]
+                        end = 60
+                        if job_title_filter == "data+science":
+                            end = 40
+                        for i in range(0, end):
+                            url = self.base_url + "q=" + job_title_filter + "&l=" + location \
+                            + "&sc=" + parse.quote(education_quote+experience_quote) \
+                            + "jt%28fulltime%29%3B&vjk=7f804051c13e6f15" + "&start=%d" % (i*10)
+                            logging.info("Scraping Pass #" + str(i + 1) + " for " + "'" + str(url) + "' ...")
 
-                        if not os.path.exists(self.html_dir):
-                            os.mkdir(self.html_dir)
-                        file_name = "%s_%s_%s_%s" % (self.job_title_filter, self.location_filter, self.education_filter, self.experience_filter)
-                        save_path = "%s/%s_%d.html" % (self.html_dir, file_name, i)
+                            if not os.path.exists(self.html_dir):
+                                os.mkdir(self.html_dir)
+                            file_name = "%s_%s_%s_%s" % (self.job_title_filter, self.location_filter, self.education_filter, self.experience_filter)
+                            save_path = "%s/%s_%d.html" % (self.html_dir, file_name, i)
 
-                        if not os.path.exists(save_path):
-                            print("in")
-                            raw_html = self.scrape_html(url)
-                            if raw_html is not None:
-                                with open(save_path, 'w') as f:
-                                    f.write(raw_html)
+                            if not os.path.exists(save_path):
+                                raw_html = self.scrape_html(url)
+                                if raw_html is not None:
+                                    with open(save_path, 'w') as f:
+                                        f.write(raw_html)
 
     def scrape_html(self, url):
         try:
@@ -227,15 +193,18 @@ class Scraper():
         df_save = pd.concat([df_ori, df])
         print("df_save %d" % len(df_save))
         # df_save = df_save.drop_duplicates(subset=["Link"], keep='last')
+        df_save = df_save[["Company", "Title", "job_title_filter", "location_filter", "education_filter", "experience_filter",
+             "Salary"]]
+        df_save.drop_duplicates()
         df_save.to_csv(save_path, index=False)
         logging.info(save_path + " generated")
 
     def temp_scrape(self):
-        self.html_dir = 'html_1202/'
+        self.html_dir = 'html_1203/'
         self.parse_htmls()
 
 
 if __name__ == "__main__":
     scraper = Scraper()
-    scraper.temp_scrape()
+    scraper.execute()
 
