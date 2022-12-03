@@ -52,7 +52,7 @@ Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.09, random_sta
 '''<<<<KNN'''
 
 #KNN
-model = KNeighborsClassifier(n_neighbors = 23, weights = 'distance', p = 1)
+model = KNeighborsClassifier(n_neighbors = 38, weights = 'distance', p = 1)
 
 model.fit(Xtrain, ytrain)
 ypred_knn = model.predict(Xtest)

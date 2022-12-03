@@ -10,18 +10,18 @@ def main():
     #one-hot
     local_oh = pd.get_dummies(data.location_filter, prefix = 'location')
     job_oh = pd.get_dummies(data.job_title_filter, prefix = 'jobTitle')
-    exp_oh = pd.get_dummies(data.experience_filter, prefix = 'exp')
+    # exp_oh = pd.get_dummies(data.experience_filter, prefix = 'exp')
 
     data['Salary'] = data['Salary'].astype(float)
     data['Salary'] = data['Salary'].apply(lambda x: salary_(x))
 
-    # experience_map = {
-    #         "Entry": 0,
-    #         "Mid": 1,
-    #         "Senior": 2
-    #     }
-    # data['experience_filter'] = data['experience_filter'].map(experience_map)
-    output = pd.concat([job_oh, local_oh, exp_oh, data[['Salary']]], axis = 1)
+    experience_map = {
+            "Entry": 1,
+            "Mid": 2,
+            "Senior": 3
+        }
+    data['experience_filter'] = data['experience_filter'].map(experience_map)
+    output = pd.concat([job_oh, local_oh, data[['experience_filter', 'Salary']]], axis = 1)
 
     # data.drop(columns = ['Title'], inplace = True)
     # data.drop(columns = ['Company'], inplace = True)
