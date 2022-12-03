@@ -25,34 +25,30 @@ for i in range(0, df.shape[1]):
 
 X = np.column_stack(tuple(x_))
 
-Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.09, random_state = 0)
+Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.2, random_state = 0)
 
 
 '''KNN>>>>'''
-# best_p = -1
-# best_score = 0.0
-# best_k = -1
-# kfold = 5
+k_fold_range = [5, 10]
 # k_range = [3, 5, 7, 8, 9, 10, 11, 13, 15, 17, 19]
 
-# mean_error = []; std_error = []
-# for k in range(10, 100):
-#     for p in range(1, 100):
-#         model = KNeighborsClassifier(n_neighbors = k, weights = 'distance', p = p)
-#         model.fit(Xtrain, ytrain)
-#         knn_score = model.score(Xtest, ytest)
-#         if knn_score > best_score:
-#             best_score = knn_score
-#             best_k = k
-#             best_p = p
+for kfold in k_fold_range:
+    mean_error = []; std_error = []
+    for k in range(3, 70):
+        model = KNeighborsClassifier(n_neighbors = k, weights = 'uniform')
+        from sklearn.model_selection import cross_val_score
+        scores = cross_val_score(model, X, y, cv = kfold, scoring = 'f1')
+        mean_error.append(scores.mean())
+        std_error.append(scores.std())
 
-# print("best_p = ", best_p)
-# print("best_k = ", best_k)
-# print("best_score = ", best_score)
+    plt.errorbar(range(3, 70), mean_error, yerr=std_error, linewidth=1, label = f'k-fold: {kfold}')
+plt.xlabel("K"); plt.ylabel("F1 Score")
+plt.legend()
+plt.show()
 '''<<<<KNN'''
 
 #KNN
-model = KNeighborsClassifier(n_neighbors = 38, weights = 'distance', p = 1)
+model = KNeighborsClassifier(n_neighbors = 27, weights = 'uniform')
 
 model.fit(Xtrain, ytrain)
 ypred_knn = model.predict(Xtest)
