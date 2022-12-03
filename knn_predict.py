@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import pandas as pd
 from sklearn import metrics
-from sklearn.metrics import auc, classification_report, confusion_matrix, roc_curve
+from sklearn.metrics import auc, classification_report, confusion_matrix, plot_confusion_matrix, roc_curve
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LogisticRegression
@@ -55,6 +55,9 @@ ypred_knn = model.predict(Xtest)
 print(">>>>>>>>>>>>>>>>>>>>>>KNN<<<<<<<<<<<<<<<<<<<<")
 print(confusion_matrix(ytest, ypred_knn))
 print(classification_report(ytest, ypred_knn))
+plot_confusion_matrix(model, Xtest, ytest, display_labels=["y = 0", "y = 1"])
+plt.title("KNN Regression Confusion Matrix")
+plt.show()
 print("-------------------------------------------------------------")
 print(f'Accuracy of train: {model.score(Xtrain, ytrain)}')
 print(f'Accuracy of test: {model.score(Xtest, ytest)}')
@@ -73,6 +76,9 @@ ypred_dummy = dummy.predict(Xtest)
 print(">>>>>>>>>>>>>>>>>>>>>>Dummy Model<<<<<<<<<<<<<<<<<<<<")
 print(confusion_matrix(ytest, ypred_dummy))
 print(classification_report(ytest, ypred_dummy))
+plot_confusion_matrix(model, Xtest, ytest, display_labels=["y = 0", "y = 1"])
+plt.title("Most Frequent Classifier Confusion Matrix")
+plt.show()
 print("-------------------------------------------------------------")
 fpr, tpr, _ = roc_curve(ytest,ypred_dummy)
 plt.plot(fpr, tpr, label="baseline model", c="green")
